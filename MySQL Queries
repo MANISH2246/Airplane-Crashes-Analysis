@@ -1,0 +1,307 @@
+📈 Queries Overview
+
+- Query 1 (Showing Databases): This command lists all the available databases.
+SHOW DATABASES;
+
+- Query 2 (Using the "airopalane" Database): This command switches to the "airopalane" database for subsequent queries.
+USE airoplane;
+
+- Query 3 (Displaying Contents of "aircrashes" Table): This query retrieves all rows from the "aircrashes" table, displaying the complete dataset.
+SELECT * FROM aircrashes;
+
+- Query 4 (Renaming Column in "aircrashes" Table): This command renames the column with the name `ï»¿Year` to `Year` in the "aircrashes" table, resolving any encoding issues.
+ALTER TABLE aircrashes
+RENAME COLUMN `ï»¿Year` TO `Year`;
+
+
+- Query 5 (Top 5 Fatalities Over Time): Retrieves the top 5 years with the highest total fatalities in descending order.
+SELECT `Year`, SUM(`Sum of Fatalities (air)`) AS `TotalFatalities`
+FROM aircrashes
+GROUP BY `Year`
+ORDER BY `TotalFatalities` DESC
+LIMIT 5;
+
+- Query 6 (Most Common Aircraft Manufacturer): Lists the top 4 most common aircraft manufacturers based on the crash count.
+SELECT `Aircraft Manufacturer`, COUNT(*) AS `ManufacturerCount`
+FROM aircrashes
+GROUP BY `Aircraft Manufacturer`
+ORDER BY `ManufacturerCount` DESC
+LIMIT 4;
+
+- Query 7 (Distribution of Fatalities by Aircraft Type): Shows the top 5 aircraft types with the highest total fatalities.
+SELECT `Aircraft`, SUM(`Sum of Fatalities (air)`) AS `TotalFatalities`
+FROM aircrashes
+GROUP BY `Aircraft`
+ORDER BY `TotalFatalities` DESC
+LIMIT 5;
+
+- Query 8 (Ground Incidents Analysis):** Provides the total number of ground incidents each year.
+SELECT `Year`, COUNT(`Sum of Ground`) AS `TotalGroundIncidents`
+FROM aircrashes
+GROUP BY `Year`
+ORDER BY `TotalGroundIncidents`;
+
+- Query 9 (Operator-wise Fatality Rate):** Calculates the average fatality rate for each operator, ordered by rate in descending order.
+SELECT `Operator`, AVG(`Sum of Fatalities (air)`) AS `AvgFatalityRate`
+FROM aircrashes
+GROUP BY `Operator`
+ORDER BY `AvgFatalityRate` DESC;
+
+- Query 10 (Yearly Evolution of Crashes):** Counts the total number of crashes for each year.
+SELECT `Year`, COUNT(*) AS `CrashCount`
+FROM aircrashes
+GROUP BY `Year`
+ORDER BY `Year`;
+
+- Query 11 (Most Frequent Operator):** Identifies the operator involved in the most crashes.
+SELECT `Operator`, COUNT(*) AS `CrashCount`
+FROM aircrashes
+GROUP BY `Operator`
+ORDER BY `CrashCount` DESC
+LIMIT 5;
+
+- Query 12 (Top 5 Aircraft Models with Highest Fatalities):** Lists the top 5 aircraft models associated with the highest total fatalities.
+SELECT `Aircraft`, SUM(`Sum of Fatalities (air)`) AS `TotalFatalities`
+FROM aircrashes
+GROUP BY `Aircraft`
+ORDER BY `TotalFatalities` DESC
+LIMIT 5;
+
+- Query 13 (Quarterly Distribution of Crashes):** Provides the distribution of crashes by year and quarter.
+SELECT `Year`, `Quarter`, COUNT(*) AS `CrashCount`
+FROM aircrashes
+GROUP BY `Year`, `Quarter`
+ORDER BY `Year`, `Quarter`;
+
+- Query 14 (Crashes in World War I):** Retrieves all records of airplane crashes that occurred during World War I (1914-1918).
+SELECT *
+FROM aircrashes
+WHERE `Year` BETWEEN 1914 AND 1918;
+
+- Query 15 (Fatalities vs. Aboard Comparison):** Compares total fatalities to the total number of people aboard each year.
+SELECT `Year`, SUM(`Sum of Fatalities (air)`) AS `TotalFatalities`, SUM(`Sum of Aboard`) AS `TotalAboard`
+FROM aircrashes
+GROUP BY `Year`
+ORDER BY `Year`;
+
+- Query 16 (Geographical Distribution of Crashes):** Displays the geographical distribution of crashes, indicating regions with the highest crash counts.
+SELECT `Country/Region`, COUNT(*) AS `CrashCount`
+FROM aircrashes
+GROUP BY `Country/Region`
+ORDER BY `CrashCount` DESC;
+
+- Query 17 (Most Common Location for Crashes):** Lists the top 5 locations (cities or regions) with the highest crash counts.
+SELECT `Location`, COUNT(*) AS `CrashCount`
+FROM aircrashes
+GROUP BY `Location`
+ORDER BY `CrashCount` DESC
+LIMIT 5;
+
+- Query 18 (Monthly Ground Incidents Trend):** Shows the trend of ground incidents over the months.
+SELECT `Month`, SUM(`Sum of Ground`) AS `TotalGroundIncidents`
+FROM aircrashes
+GROUP BY `Month`
+ORDER BY `TotalGroundIncidents`;
+
+- Query 19 (Operator-wise Ground Incident Rate):** Calculates the average ground incident rates for operators, ordered by the rate in descending order.
+SELECT `Operator`, AVG(`Sum of Ground`) AS `AvgGroundIncidentRate`
+FROM aircrashes
+GROUP BY `Operator`
+ORDER BY `AvgGroundIncidentRate` DESC;
+
+- Query 20 (Countries with Zero Crashes):** Identifies countries or regions with no recorded airplane crashes.
+SELECT `Country/Region`
+FROM aircrashes
+WHERE `Country/Region` NOT IN (SELECT DISTINCT `Country/Region` FROM aircrashes);
+
+- Query 21 (Crashes Involving Zeppelins):** Counts the number of crashes involving zeppelins.
+SELECT Aircraft Manufacturer
+FROM aircrashes
+WHERE `Aircraft Manufacturer` LIKE 'Zeppelin%';
+
+- Query 22 (Operators with the Highest Average Fatalities per Crash):** Lists the top 5 operators with the highest average fatalities per crash.
+SELECT `Operator`, COUNT(*) AS `CrashCount`, AVG(`Sum of Fatalities (air)`) AS `AvgFatalitiesPerCrash`
+FROM aircrashes
+GROUP BY `Operator`
+ORDER BY `AvgFatalitiesPerCrash` DESC
+LIMIT 5;
+
+- Query 23 (Months with the Highest Percentage Increase in Crashes Year over Year):** Determines months with the highest percentage increase in crashes year over year.
+SELECT
+    t1.`Year`,
+    t1.`Month`,
+    (t1.`CrashCount` - t2.`CrashCount`) / t2.`CrashCount` AS `PercentageIncrease`
+FROM
+    (SELECT `Year`, `Month`, COUNT(*) AS `CrashCount`
+    FROM aircrashes
+    GROUP BY `Year`, `Month`) t1
+JOIN
+    (SELECT `Year`, `Month`, COUNT(*) AS `CrashCount`
+    FROM aircrashes
+    GROUP BY `Year`, `Month`) t2
+ON t1.`Month` = t2.`Month` AND t1.`Year` = t2.`Year` + 1
+ORDER BY `PercentageIncrease` DESC
+LIMIT 4;
+
+- Query 24 (Countries with the Highest Ground Incident Rate):** Identifies countries or regions with the highest average ground incident rates.
+SELECT
+    `Country/Region`,
+    AVG(`Sum of Ground`) AS `AvgGroundIncidents`
+FROM
+    aircrashes
+GROUP BY
+    `Country/Region`
+ORDER BY
+    `AvgGroundIncidents` DESC
+LIMIT 3;
+
+- Query 25 (Average Fatalities per Quarter Over the Years):** Calculates the average fatalities per quarter over the years.
+SELECT
+    `Year`,
+    `Quarter`,
+    AVG(`Sum of Fatalities (air)`) AS `AvgFatalitiesPerQuarter`
+FROM
+    aircrashes
+GROUP BY
+    `Year`, `Quarter`
+ORDER BY
+    `Year`, `Quarter`;
+
+- Query 26 (Analysis of Crashes with Multiple Fatalities):** Provides the count of crashes with multiple fatalities for each year.
+SELECT
+    `Year`,
+    COUNT(*) AS `MultiFatalitiesCrashCount`
+FROM
+    aircrashes
+WHERE
+    `Sum of Fatalities (air)` > 1
+GROUP BY
+    `Year`
+ORDER BY
+    `Year`;
+
+- Query 27 (Crashes with a High Number of Aboard but Low Fatalities):** Retrieves crashes with a high number of people aboard but low fatalities.
+SELECT
+    `Year`,
+    `Month`,
+    `Day`,
+    `Aircraft`,
+    `Sum of Aboard`,
+    `Sum of Fatalities (air)`
+FROM
+    aircrashes
+WHERE
+    `Sum of Aboard` > 20 AND `Sum of Fatalities (air)` < 5;
+
+- Query 28 (Aircraft Models with the Highest Ground Incidents):** Lists the top 5 aircraft models with the highest total ground incidents.
+SELECT
+    `Aircraft`,
+    SUM(`Sum of Ground`) AS `TotalGroundIncidents`
+FROM
+    aircrashes
+GROUP BY
+    `Aircraft`
+ORDER BY
+    `TotalGroundIncidents` DESC
+LIMIT 5;
+
+- Query 29 (Operators with the Highest Ground Incident Rate):** Identifies the top 5 operators with the highest average ground incident rates.
+SELECT
+    `Operator`,
+    AVG(`Sum of Ground`) AS `AvgGroundIncidentRate`
+FROM
+    aircrashes
+GROUP BY
+    `Operator`
+ORDER BY
+    `AvgGroundIncidentRate` DESC
+LIMIT 5;
+
+- Query 30 (Aircraft Types with the Highest Average Fatalities per Ground Incident):** Lists the top 5 aircraft types with the highest average fatalities per ground incident.
+SELECT
+    `Aircraft`,
+    AVG(`Sum of Fatalities (air)`) / SUM(`Sum of Ground`) AS `AvgFatalitiesPerGroundIncident`
+FROM
+    aircrashes
+GROUP BY
+    `Aircraft`
+ORDER BY
+    `AvgFatalitiesPerGroundIncident` DESC
+LIMIT 5;
+
+- Query 31 (Distribution of Crashes by Aircraft Manufacturer and Year):** Provides the distribution of crashes by aircraft manufacturer and year.
+SELECT
+    `Year`,
+    `Aircraft Manufacturer`,
+    COUNT(*) AS `CrashCount`
+FROM
+    aircrashes
+GROUP BY
+    `Year`, `Aircraft Manufacturer`
+ORDER BY
+    `Year`, `CrashCount` DESC;
+
+- Query 32 (Months with the Highest Number of Ground Incidents):** Identifies the months with the highest number of ground incidents.
+SELECT
+    `Month`,
+    SUM(`Sum of Ground`) AS `TotalGroundIncidents`
+FROM
+    aircrashes
+GROUP BY
+    `Month`
+ORDER BY
+    `TotalGroundIncidents` DESC;
+- Query 33 (Fatalities-to-Aboard Ratio Analysis):
+SELECT
+    `Year`,
+    SUM(`Sum of Fatalities (air)`) / SUM(`Sum of Aboard`) AS `FatalitiesToAboardRatio`
+FROM
+    aircrashes
+GROUP BY
+    `Year`
+ORDER BY
+    `Year`;
+
+- Query 34 (Analysis of Crashes with High Ground Incidents but Zero Fatalities):
+SELECT
+    `Year`,
+    COUNT(*) AS `CrashCount`
+FROM
+    aircrashes
+WHERE
+    `Sum of Ground` > 0 AND `Sum of Fatalities (air)` = 0
+GROUP BY
+    `Year`
+ORDER BY
+    `Year`;
+
+- Query 35 (Operators with the Highest Increase in Crashes Year over Year):
+SELECT
+    t1.`Year`,
+    t1.`Operator`,
+    (t1.`CrashCount` - t2.`CrashCount`) AS `CrashIncrease`
+FROM
+    (SELECT `Year`, `Operator`, COUNT(*) AS `CrashCount`
+    FROM aircrashes
+    GROUP BY `Year`, `Operator`) t1
+JOIN
+    (SELECT `Year`, `Operator`, COUNT(*) AS `CrashCount`
+    FROM aircrashes
+    GROUP BY `Year`, `Operator`) t2
+ON t1.`Operator` = t2.`Operator` AND t1.`Year` = t2.`Year` + 1
+ORDER BY
+    `CrashIncrease` DESC
+LIMIT 5;
+
+- Query 36 (Analysis of Crashes with Multiple Ground Incidents):
+SELECT
+    `Year`,
+    COUNT(*) AS `MultiGroundIncidentsCrashCount`
+FROM
+    aircrashes
+WHERE
+    `Sum of Ground` > 1
+GROUP BY
+    `Year`
+ORDER BY
+    `Year`;
